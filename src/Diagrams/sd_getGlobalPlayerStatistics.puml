@@ -1,0 +1,27 @@
+@startuml sd_getGlobalPlayerStatistics
+
+actor player
+participant BlazorFront
+participant BlazorBack
+participant MaScoreApi
+
+player -> BlazorFront : PlayerStatisticsPage
+activate BlazorFront
+    BlazorFront -> BlazorBack : GetAllGameTypes(PlayerId)
+    activate BlazorBack
+        BlazorBack --> BlazorFront : List<GameType>()
+    deactivate BlazorBack
+    BlazorFront -> BlazorFront : Compute
+
+    loop GameType
+        BlazorFront -> BlazorBack : GetGlobalInformation(PlayerId,GameTypeId)
+        activate BlazorBack
+            BlazorBack --> BlazorFront : GameTypesPlayerStatistics
+        deactivate BlazorBack
+    end
+
+    BlazorFront -> player : show
+deactivate BlazorFront
+
+
+@enduml
