@@ -3,7 +3,7 @@
 actor player
 participant BlazorFront
 participant BlazorBack
-participant MaScoreApi
+participant ScoringApi
 
 player -> BlazorFront : PlayerStatisticsPage
 activate BlazorFront
@@ -13,13 +13,16 @@ activate BlazorFront
     deactivate BlazorBack
     BlazorFront -> BlazorFront : Compute
 
-    loop GameType
-        BlazorFront -> BlazorBack : GetGlobalInformation(PlayerId,GameTypeId)
-        activate BlazorBack
-            BlazorBack --> BlazorFront : GameTypesPlayerStatistics
-        deactivate BlazorBack
-    end
-
+    BlazorFront -> BlazorBack : GetGlobalStatistics(PlayerId)
+    activate BlazorBack
+        loop GameType
+            BlazorBack -> BlazorBack : GetStatistics(PlayerId,GameTypeId)
+            activate BlazorBack
+                BlazorBack -> ScoringApi : GetGameHistory()
+                BlazorBack -> BlazorBack : Compute 
+                BlazorBack --> BlazorFront : GameTypesPlayerStatistics
+            deactivate BlazorBack
+        end
     BlazorFront -> player : show
 deactivate BlazorFront
 
